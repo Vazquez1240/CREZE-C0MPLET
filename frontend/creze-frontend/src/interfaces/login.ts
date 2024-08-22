@@ -1,0 +1,31 @@
+
+export interface LoginBody{
+    email: string;
+    password: string;
+}
+
+export interface Register{
+    email: string;
+    username: string;
+    password: string;
+    password2: string;
+}
+
+export interface RefreshToken{
+    refresh:string;
+}
+
+export interface LoginResponse {
+    access: string;
+    refresh: string;
+}
+
+export interface RegisterResponse {
+    status: string;
+}
+
+export interface SucessResponse{
+    openDialog: boolean;
+    titulo: string;
+    message: string;
+}
