@@ -1,8 +1,13 @@
 import { makeAutoObservable } from 'mobx';
+import {verifyToken} from "../api/api.ts";
+import {ResponseverifyToken} from "../interfaces/login.ts";
 
 class UserData {
+  email = '';
+  password = '';
   access_token = '';
   refresh_token = '';
+  isAuthenticated = false;
 
   constructor() {
     const storedAccessToken = localStorage.getItem('access_token');
@@ -16,13 +21,35 @@ class UserData {
     makeAutoObservable(this);
   }
 
-  setDataUser(access_token: string, refresh_token: string): void {
+  setDataUser(access_token: string, refresh_token: string, email:string, password: string): void {
     this.access_token = access_token;
     this.refresh_token = refresh_token;
-
-    // Guardar en localStorage
+    this.email = email;
+    this.password = password;
     localStorage.setItem('access_token', access_token);
     localStorage.setItem('refresh_token', refresh_token);
+    localStorage.setItem('email', email);
+    localStorage.setItem('access_token', access_token);
+    localStorage.setItem('refresh_token', refresh_token);
+    localStorage.setItem('email', email);
+  }
+
+  async checkAuthentication() {
+    try {
+      const response: ResponseverifyToken = await verifyToken(this.access_token);
+      response.status === 'Token is valid' ? this.isAuthenticated = true : this.isAuthenticated = false;
+      return {
+        'status': 200,
+        'isAuthenticated': this.isAuthenticated
+      }
+    } catch {
+      this.isAuthenticated = false;
+
+      return {
+        'status': 400,
+        'message': 'El token es invalido o ha expirado'
+      }
+    }
   }
 
   clearDataUser(): void {

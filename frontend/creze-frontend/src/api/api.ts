@@ -12,10 +12,19 @@ export const login = async (loginData: LoginBody) => {
 
 export const refreshToken = async (refresh: RefreshToken) => {
     const response = await api.post('/rest/v1/refresh-token/', refresh);
+    return response.data;
 }
 
 export const register = async (registerData: Register) => {
     const response = await api.post('/rest/v1/register/', registerData);
     return response.data;
 }
+
+export const verifyToken = async (accessToken: string) => {
+    const response = await api.post('rest/v1/verify-token/', {},  {
+            headers: { Authorization: `Bearer ${accessToken}` }
+        }
+    );
+    return response.data;
+};
 

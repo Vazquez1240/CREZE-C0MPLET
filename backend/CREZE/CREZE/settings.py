@@ -140,13 +140,13 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),  # Tiempo de vida del token de acceso
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Tiempo de vida del token de refresco
+    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=15),  # Tiempo de vida del token de acceso
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=30),  # Tiempo de vida del token de refresco
     'ROTATE_REFRESH_TOKENS': True,  # Si True, se rotarán los tokens de refresco
     'BLACKLIST_AFTER_ROTATION': True,  # Si True, se agregan los tokens rotados a una lista negra
     'UPDATE_LAST_LOGIN': False,  # Si True, actualiza la fecha del último inicio de sesión
     'ALGORITHM': 'HS256',  # Algoritmo de encriptación
-    'SIGNING_KEY': os.getenv('SIGNING_KEY', 'SIGNING_KEY'),  # Clave secreta para firmar los tokens
+    'SIGNING_KEY': os.getenv('SIGNING_KEYBLACKLIST_AFTER_ROTATION', 'SIGNING_KEY'),  # Clave secreta para firmar los tokens
     'VERIFYING_KEY': None,  # Clave pública para verificar los tokens (si se usa)
     'AUTH_HEADER_TYPES': ('Bearer',),  # Tipo de encabezado de autorización
     'USER_ID_FIELD': 'id',  # Campo del modelo que se usará como identificador

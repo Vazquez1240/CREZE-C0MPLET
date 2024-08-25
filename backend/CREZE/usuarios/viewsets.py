@@ -12,6 +12,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, TokenBackendError
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
+import urllib.parse
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -99,6 +101,22 @@ class TokenRefreshViewSet(viewsets.ViewSet):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class TokenVerifyViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
+    http_method_names = ['post', 'options', 'head']
+
+    def create(self, request):
+        token = request.headers.get('Authorization')
+        if token:
+            token = token.split(' ')[1]  # Asume que el token viene en el formato 'Bearer <token>'
+            try:
+                AccessToken(token)  # Verifica la validez del token
+                return Response({"status": "Token is valid"}, status=status.HTTP_200_OK)
+            except InvalidToken:
+                return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"error": "Token is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
@@ -125,17 +143,29 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
         file_name = file.name
 
+        if Documento.objects.filter(file_name=file_name, user=request.user.id).exists():
+            return Response({'nombre': ['Ya existe un archivo con ese nombre!']},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         for i, chunk in enumerate(self.chunkify(file, fragment_size)):
+            print('entrando al for')
             chunk_io = BytesIO(chunk)
             fragment_name = f"{file_name}_part_{i}"
             s3_client.upload_fileobj(chunk_io, settings.AWS_S3_BUCKET_NAME, fragment_name)
+
+        file_name_encoded = urllib.parse.quote(fragment_name)
+
+        url_documento = f"https://{settings.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/{file_name_encoded}"
+        print(url_documento)
 
         serializer = self.get_serializer(data={
             'file_name': file_name,
             'original_size': file.size,
             'status': 'Uploaded',
-            'user': request.user.id
+            'url_document': url_documento,
+            'user': request.user.id,
         })
+
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

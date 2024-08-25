@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.dispatch import receiver
@@ -65,7 +67,13 @@ class Documento(models.Model):
     file_name = models.CharField(max_length=255)
     original_size = models.PositiveIntegerField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    url_document = models.URLField(blank=True)
     status = models.CharField(max_length=20, default='Pending')
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=('user', 'file_name'), name='unique_document')]
+        verbose_name = 'Documento'
+        verbose_name_plural = 'Documentos'
 
 auditlog.register(User)
 auditlog.register(Group)

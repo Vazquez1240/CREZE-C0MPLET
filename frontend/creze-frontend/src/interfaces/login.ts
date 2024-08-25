@@ -12,7 +12,7 @@ export interface Register{
 }
 
 export interface RefreshToken{
-    refresh:string;
+    refresh?:string;
 }
 
 export interface LoginResponse {
@@ -28,4 +28,14 @@ export interface SucessResponse{
     openDialog: boolean;
     titulo: string;
     message: string;
+}
+
+export interface ComponenteError {
+    numero_error: string;
+    mensaje: string;
+    url_redireccion: string;
+}
+
+export interface ResponseverifyToken {
+    status: string;
 }
