@@ -13,11 +13,13 @@ export interface Register{
 
 export interface RefreshToken{
     refresh?:string;
+    error?:string
 }
 
 export interface LoginResponse {
     access: string;
     refresh: string;
+    error?: string
 }
 
 export interface RegisterResponse {

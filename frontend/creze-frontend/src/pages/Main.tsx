@@ -2,48 +2,34 @@ import React, {useEffect, useState} from 'react';
 import { observer } from 'mobx-react-lite';
 import Dashboard from "../components/dashboard/dashboard.tsx";
 import useUserData from "../stores/userData.ts";
-import ErrorComponente from "../components/Error/ErrorComponente.tsx";
-import {errorUnauthorized} from "../utils/Messages.ts";
-import RefreshTokenFunction from "../utils/FunctionsBottons.ts";
+import {useNavigate} from "react-router-dom";
+
 
 
 const MainPage = observer(() => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    const errorComponente = {
-        numero_error: 'Error 401',
-        mensaje: 'Lo sentimos su token ha expirado!',
-        url_redireccion: '/',
-        botones: [
-            {
-                mensaje: 'Ir al inicio',
-                url_redireccion: '/',
-            },
-            {
-                mensaje: 'Recargar la pagina',
-                url_redireccion: '/home',
-                onClick: () => RefreshTokenFunction()
-            }
-        ]
-    }
+    const navigate = useNavigate()
+
     useEffect(() => {
         const verifyToken = async () => {
+            const valid = await useUserData.checkAuthentication();
 
-            const valid = await  useUserData.checkAuthentication();
-            // @ts-ignore
-            valid.status === 200 ? setIsAuthenticated(valid) : setIsAuthenticated(false);
+            if (valid.status === 200) {
+                setIsAuthenticated(true);
+            } else {
+                setIsAuthenticated(false);
+                navigate('/error'); // Mueve la navegación aquí
+            }
         };
+
         verifyToken();
-    }, []);
+    }, [navigate]); // Agrega navigate como dependencia
 
     return (
         isAuthenticated ? (
             <Dashboard />
-        ) : (
-            <div>
-                <ErrorComponente componente={useUserData.access_token === '' ? errorUnauthorized : errorComponente} />
-            </div>
-        )
+        ) : null
     );
 
 });

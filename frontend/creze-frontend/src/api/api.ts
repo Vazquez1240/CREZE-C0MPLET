@@ -11,8 +11,18 @@ export const login = async (loginData: LoginBody) => {
 };
 
 export const refreshToken = async (refresh: RefreshToken) => {
-    const response = await api.post('/rest/v1/refresh-token/', refresh);
-    return response.data;
+    try{
+        const response = await api.post('/rest/v1/refresh-token/', refresh);
+        if(response.status === 400){
+            console.log('hay error')
+        }
+        return response.data;
+    }catch(error){
+        // @ts-ignore
+        return {
+            error: error.response.data.error
+        }
+    }
 }
 
 export const register = async (registerData: Register) => {
