@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
-    'apirest'
+    'apirest',
+    'django_extensions'
 ]
 APPEND_SLASH = os.getenv('APPEND_SLASH', False)
 
@@ -140,8 +141,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=15),  # Tiempo de vida del token de acceso
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=30),  # Tiempo de vida del token de refresco
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Tiempo de vida del token de acceso
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=50),  # Tiempo de vida del token de refresco
     'ROTATE_REFRESH_TOKENS': True,  # Si True, se rotarán los tokens de refresco
     'BLACKLIST_AFTER_ROTATION': True,  # Si True, se agregan los tokens rotados a una lista negra
     'UPDATE_LAST_LOGIN': False,  # Si True, actualiza la fecha del último inicio de sesión
@@ -174,7 +175,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'usuarios.managers.CustomJWTAuthentication',
+        #"'usuarios.managers.CustomRefreshToken',
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
 

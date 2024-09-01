@@ -21,6 +21,10 @@ class UserData {
     makeAutoObservable(this);
   }
 
+  setIsAuthenticated(isAuthenticated: boolean) {
+    this.isAuthenticated = isAuthenticated;
+  }
+
   setDataUser(access_token: string, refresh_token: string, email:string, password: string): void {
     this.access_token = access_token;
     this.refresh_token = refresh_token;
@@ -40,14 +44,15 @@ class UserData {
       response.status === 'Token is valid' ? this.isAuthenticated = true : this.isAuthenticated = false;
       return {
         'status': 200,
-        'isAuthenticated': this.isAuthenticated
+        'isAuthenticated': this.isAuthenticated,
+        'message': 'the session is correct'
       }
-    } catch {
+    } catch(error) {
+      console.log(error.response.data)
       this.isAuthenticated = false;
-
       return {
         'status': 400,
-        'message': 'El token es invalido o ha expirado'
+        'message': error.response.data.detail
       }
     }
   }

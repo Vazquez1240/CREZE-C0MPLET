@@ -11,9 +11,10 @@ export default async function  RefreshTokenFunctio () {
     if( !response.error ){
         useUserData.setDataUser(response.access, response.refresh, useUserData.email, useUserData.password)
         window.location.reload();
-
     }else{
+        await useUserData.clearDataUser()
         window.location.href = '/'
+
     }
 
 }

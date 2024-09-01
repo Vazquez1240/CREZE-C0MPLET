@@ -13,8 +13,9 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, TokenB
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
 import urllib.parse
-from rest_framework_simplejwt.tokens import AccessToken
-
+from rest_framework_simplejwt.tokens import UntypedToken
+from usuarios.managers import CustomRefreshToken
+from rest_framework.decorators import action
 
 class UserViewSet(viewsets.ModelViewSet):
     parser_classes = [JSONParser]
@@ -73,49 +74,51 @@ class AuthTokenViewset(viewsets.ViewSet):
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 class TokenRefreshViewSet(viewsets.ViewSet):
-    http_method_names = ['post', 'options', 'head']
     permission_classes = [AllowAny]
 
-
     def create(self, request):
-        view = TokenRefreshView.as_view()
         try:
-            response = view(request._request)
-            data = response.data
+            refresh_token = request.data.get('refresh')
+            if not refresh_token:
+                return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if 'access' in data:
-                return Response({
-                    'access': data['access'],
-                    'refresh': data['refresh'],
-                }, status=status.HTTP_200_OK)
-            else:
-                return Response({
-                    'error': 'Invalid response from token view',
-                    'details': data
-                }, status=status.HTTP_400_BAD_REQUEST)
+            refresh = CustomRefreshToken(refresh_token)
+            print('pasando')
+            refresh.verify()
+            access_token = refresh.get_new_access_token()  # Obtiene un nuevo access token
+
+            data = {
+                'access': access_token,
+                'refresh': str(refresh)
+            }
+            return Response(data, status=status.HTTP_200_OK)
         except TokenError as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+             return Response({'error': 'Refresh token is invalid.'},
+                                status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': f'Unexpected error occurred: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TokenVerifyViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
-    http_method_names = ['post', 'options', 'head']
+    permission_classes = [AllowAny]
 
-    def create(self, request):
-        token = request.headers.get('Authorization')
-        if token:
-            token = token.split(' ')[1]  # Asume que el token viene en el formato 'Bearer <token>'
-            try:
-                AccessToken(token)  # Verifica la validez del token
-                return Response({"status": "Token is valid"}, status=status.HTTP_200_OK)
-            except InvalidToken:
-                return Response({"error": "Invalid or expired token"}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response({"error": "Token is required"}, status=status.HTTP_400_BAD_REQUEST)
+    @action(detail=False, methods=['post'])
+    def verify(self, request):
+        token = request.data.get('token')
+        try:
+            UntypedToken(token)
+        except InvalidToken as e:
+            print('Invalid token error:', e)
+            return Response({'detail': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+        except TokenError as e:
+            print('Token error:', e)
+            return Response({'detail': str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            print('General error:', e)
+            return Response({'detail': 'Unexpected error occurred'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        return Response({'detail': 'Token is valid'}, status=status.HTTP_200_OK)
 
 class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer

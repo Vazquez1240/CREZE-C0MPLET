@@ -4,13 +4,14 @@ import Home from "./pages/Home.tsx";
 import MainPage from "./pages/Main";
 import RegisterPage from "./pages/Registro.tsx";
 import ErrorPage from "./pages/Error.tsx";
+import NavbarWrapper from "./layouts/layout";
 
 
 function App() {
 
   return (
      <Router>
-
+        <NavbarWrapper />
          <Routes>
              <Route path='/' element={<Home />}/>
              <Route path='/home' element={<MainPage />}/>
