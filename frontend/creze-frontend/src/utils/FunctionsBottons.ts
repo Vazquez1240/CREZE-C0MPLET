@@ -8,6 +8,7 @@ export default async function  RefreshTokenFunctio () {
     }
 
     const response:LoginResponse = await refreshToken(data)
+    console.log(response, 'response')
     if( !response.error ){
         useUserData.setDataUser(response.access, response.refresh, useUserData.email, useUserData.password)
         window.location.reload();

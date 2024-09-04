@@ -14,21 +14,21 @@ export default function Navbar() {
 
     const navigation = [
 
-      { name: 'Inicio', href: '#', current: true },
-      { name: 'Mis documentos', href: '#', current: false },
+      { name: 'Inicio', href: '/home', current: true },
+      { name: 'Mis documentos', href: '/upDocument', current: false },
     ]
 
     const userNavigation = [
       { name: 'Your Profile', href: '#' },
-      { name: 'Settings', href: '#' },
+      { name: 'Settings', href: '#' },      { name: 'Your Profile', href: '#' },
       { name: 'Sign out', href: '#' },
       { name: 'Pene', href: '#'}
     ]
     return (
         <>
              <Disclosure as="nav" className="bg-gray-800">
-                    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                        <div className="flex h-16 items-center justify-between">
+                    <div className="mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex  h-16 items-center justify-between">
                             <div className="flex items-center">
                                 <div className="flex-shrink-0">
                                     <img

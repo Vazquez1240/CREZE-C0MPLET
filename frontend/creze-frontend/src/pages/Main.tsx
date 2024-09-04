@@ -18,14 +18,13 @@ const MainPage = observer(() => {
             if (valid.status === 200) {
                 setIsAuthenticated(true);
             } else {
-                console.log(valid.message, 'message')
-                if(valid.message !== 'Token is invalid or expired'){
+                if(valid.message === 'Access token is invalid. Please refresh your token.'){
+                    setIsAuthenticated(false);
+                    navigate('/error'); // Mueve la navegación aquí
+                }else{
                     setIsAuthenticated(false)
                     useUserData.clearDataUser()
                     navigate('/')
-                }else{
-                    setIsAuthenticated(false);
-                    navigate('/error'); // Mueve la navegación aquí
                 }
             }
         };

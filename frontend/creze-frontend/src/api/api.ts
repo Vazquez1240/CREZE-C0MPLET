@@ -31,7 +31,7 @@ export const register = async (registerData: Register) => {
 }
 
 export const verifyToken = async (accessToken: string) => {
-    const response = await api.post('rest/v1/verify-token/', {},  {
+    const response = await api.post('rest/v1/users/verify-token/verify/', {},  {
             headers: { Authorization: `Bearer ${accessToken}` }
         }
     );

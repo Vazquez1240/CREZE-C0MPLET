@@ -4,7 +4,7 @@ export default function UpdateDocument() {
     return(
         <>
             <h2>
-                hola
+                holarr
             </h2>
         </>
     )

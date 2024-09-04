@@ -17,7 +17,7 @@ export default function Dashboard() {
                 <main>
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {
-                            location.pathname === '/up-document' ? (<UpdateDocument />) : null
+                            location.pathname === '/home#' ? (<UpdateDocument />) : (<p>adios</p>)
                         }
                     </div>
                 </main>
