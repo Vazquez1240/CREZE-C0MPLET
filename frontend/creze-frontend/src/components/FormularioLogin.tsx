@@ -51,7 +51,7 @@ export default function FormularioLogin() {
                 const response:LoginResponse = await login(loginData);
 
                 useUserData.setDataUser(response.access, response.refresh, email, password);
-                navigate('/home');
+                navigate('/inicio');
             } catch (error) {
                 console.error('Error en la solicitud:', error);
             } finally {

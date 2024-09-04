@@ -2,9 +2,12 @@ import {Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIte
 import classNames from "classnames";
 import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import React from "react";
-
+import {useNavigate, useLocation} from "react-router-dom";
 
 export default function Navbar() {
+    const navigate = useNavigate()
+    const location = useLocation()
+
     const user = {
       name: 'Tom Cook',
       email: 'tom@example.com',
@@ -14,8 +17,8 @@ export default function Navbar() {
 
     const navigation = [
 
-      { name: 'Inicio', href: '/home', current: true },
-      { name: 'Mis documentos', href: '/upDocument', current: false },
+      { name: 'Inicio', href: '/inicio', current: false },
+      { name: 'Mis documentos', href: 'inicio/mis-documentos', current: false },
     ]
 
     const userNavigation = [
@@ -40,17 +43,17 @@ export default function Navbar() {
                                 <div className="hidden md:block">
                                     <div className="ml-10 flex items-baseline space-x-4">
                                         {navigation.map((item) => (
-                                            <a
+                                            <button
                                                 key={item.name}
-                                                href={item.href}
+                                                onClick={() => {navigate(item.href)}}
                                                 aria-current={item.current ? 'page' : undefined}
                                                 className={classNames(
-                                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                    location.pathname === `/${item.href}` || location.pathname === `${item.href}` ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                     'rounded-md px-3 py-2 text-sm font-medium',
                                                 )}
                                             >
                                                 {item.name}
-                                            </a>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
@@ -85,7 +88,7 @@ export default function Navbar() {
                                                         href={item.href}
                                                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                                                     >
-                                                        {item.name}
+                                                        {item.name} saas
                                                     </a>
                                                 </MenuItem>
                                             ))}
@@ -112,10 +115,10 @@ export default function Navbar() {
                                 <DisclosureButton
                                     key={item.name}
                                     as="a"
-                                    href={item.href}
+                                    onClick={() => {navigate(item.href)}}
                                     aria-current={item.current ? 'page' : undefined}
                                     className={classNames(
-                                        item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                        location.pathname === `/${item.href}` || location.pathname === `${item.href}` ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                         'block rounded-md px-3 py-2 text-base font-medium',
                                     )}
                                 >

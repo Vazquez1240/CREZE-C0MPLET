@@ -10,7 +10,7 @@ const Home = observer(() => {
       useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
         if (accessToken) {
-          navigate('/home');
+          navigate('/inicio');
         }
       }, [navigate]);
 

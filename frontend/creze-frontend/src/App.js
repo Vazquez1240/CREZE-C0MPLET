@@ -6,6 +6,7 @@ import RegisterPage from "./pages/Registro.tsx";
 import ErrorPage from "./pages/Error.tsx";
 import NavbarWrapper from "./layouts/layout";
 import UpdateDocument from "./components/dashboard/updateDocument";
+import ComponenteDocumento from "./components/dashboard/SubirArchivo/componenteDocumento.tsx";
 
 function App() {
 
@@ -14,8 +15,11 @@ function App() {
         <NavbarWrapper />
          <Routes>
              <Route path='/' element={<Home />}/>
-             <Route path='/home' element={<MainPage />}/>
-             <Route path='upDocument' element={<UpdateDocument />} />
+             <Route path='/inicio' element={<MainPage />}>
+                 <Route index element={<ComponenteDocumento />} />
+                <Route path='mis-documentos' element={<UpdateDocument />} />
+                {/* Otras rutas internas pueden ir aquí */}
+            </Route>
              <Route path='/register' element={<RegisterPage />}/>
              <Route path='/error' element={<ErrorPage />}/>
          </Routes>

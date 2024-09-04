@@ -24,7 +24,7 @@ export const errorRefreshToken = {
             },
             {
                 mensaje: 'Recargar la pagina',
-                url_redireccion: '/home',
+                url_redireccion: '/inicio',
                 onClick: () => RefreshTokenFunction()
             }
         ]
