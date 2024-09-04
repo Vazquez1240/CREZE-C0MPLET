@@ -141,8 +141,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),  # Tiempo de vida del token de acceso
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=10),  # Tiempo de vida del token de refresco
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),  # Tiempo de vida del token de acceso
+    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=60),  # Tiempo de vida del token de refresco
     'ROTATE_REFRESH_TOKENS': True,  # Si True, se rotarán los tokens de refresco
     'BLACKLIST_AFTER_ROTATION': True,  # Si True, se agregan los tokens rotados a una lista negra
     'UPDATE_LAST_LOGIN': False,  # Si True, actualiza la fecha del último inicio de sesión
