@@ -17,6 +17,7 @@ export default function ComponenteDocumento() {
               de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
               los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
           </header>
+
       </main>
   );
 };
