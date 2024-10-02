@@ -1,88 +1,119 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, TextField, IconButton, InputAdornment } from '@mui/material';
 import { VisuallyHiddenInput } from '@chakra-ui/react';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { SubirDocumento } from "../../../api/api.ts";
+import useDocsStores from "../../../stores/UserDocs.ts";
+import { observer } from 'mobx-react-lite'; // Asegúrate de estar usando 'mobx-react-lite'
 
-export default function ComponenteDocumento() {
-  const [files, setFiles] = useState<File[]>([]);
-  const [fileNames, setFileNames] = useState<string[]>([]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
-    if (selectedFiles) {
-      const fileArray = Array.from(selectedFiles);
-      setFiles(prevFiles => [...prevFiles, ...fileArray]); // Almacena los archivos en el estado
-      const names = fileArray.map(file => file.name);
-      setFileNames(prevNames => [...prevNames, ...names]); // Actualiza los nombres de los archivos para mostrar
-    }
-  };
 
-  const handleRemoveFile = (nameToRemove: string) => {
-    setFileNames(prevNames => prevNames.filter(name => name !== nameToRemove)); // Elimina el archivo seleccionado
-    setFiles(prevFiles => prevFiles.filter(file => file.name !== nameToRemove)); // También elimina el archivo del estado
-  };
 
-  return (
-    <main className='flex flex-col gap-10 mt-10'>
-      <header>
-        En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
-        subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
-        de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
-        los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
-      </header>
 
-      <div>
-        <TextField
-          label="Seleccionar Archivos"
-          value={fileNames.join(', ')} // Muestra los nombres de los archivos seleccionados
-          variant="outlined"
-          fullWidth
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton component="label">
-                  <AttachFileIcon />
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={handleFileChange}
-                    multiple // Permite seleccionar múltiples archivos por si se me olvida(xD)
-                    style={{ display: 'none' }}
-                  />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        <div className='flex flex-col mt-2 gap-5'>
-          {fileNames.map((fileName, index) => (
-            <div key={index} className='flex justify-between items-center mt-4 border-b-amber-50'>
-              <span>{fileName}</span>
-              <Button
-                variant="outlined"
-                onClick={() => handleRemoveFile(fileName)}
-              >
-                Eliminar
-              </Button>
+const ComponenteDocumento = observer(() => {
+    const [files, setFiles] = useState(useDocsStores.files); // Estado para los archivos
+    const [fileNames, setFileNames] = useState(useDocsStores.filesName); // Estado para los nombres de los archivos
+
+    // Actualizar los estados cuando los archivos o nombres cambien en el store
+    useEffect(() => {
+        // @ts-ignore
+        setFiles([...useDocsStores.files]); // Actualizamos con una copia de los archivos
+        setFileNames([...useDocsStores.filesName]); // Actualizamos con una copia de los nombres
+    }, [useDocsStores.files, useDocsStores.filesName]);
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFiles = event.target.files;
+        if (selectedFiles) {
+            const fileArray = Array.from(selectedFiles); // Convertir FileList a Array
+            fileArray.forEach((file) => {
+                useDocsStores.setFilesUser(file); // Añadir cada archivo al store
+                useDocsStores.setFilesUserName(file.name); // Añadir el nombre del archivo al store
+            });
+
+            // Actualizar los estados del componente después de agregar archivos
+            // @ts-ignore
+            setFiles([...useDocsStores.files]); // Actualizamos el estado de files
+            setFileNames([...useDocsStores.filesName]); // Actualizamos el estado de fileNames
+        }
+    };
+
+    const handleRemoveFile = (nameToRemove: string) => {
+        // Eliminar el archivo del store
+        useDocsStores.removeFilesUser(nameToRemove);
+
+        // Actualizar los estados del componente después de eliminar un archivo
+        // @ts-ignore
+        setFiles([...useDocsStores.files]); // Forzar una nueva referencia para que React lo detecte
+        setFileNames([...useDocsStores.filesName]); // Actualizar el estado de los nombres
+    };
+
+
+    return (
+        <main className='flex flex-col gap-10 mt-10'>
+            <header>
+                En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
+                subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
+                de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
+                los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
+            </header>
+
+            <div>
+                <TextField
+                    label="Seleccionar Archivos"
+                    value={fileNames.join(', ')} // Muestra los nombres de los archivos seleccionados
+                    variant="outlined"
+                    fullWidth
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton component="label">
+                                    <AttachFileIcon />
+                                    <VisuallyHiddenInput
+                                        type="file"
+                                        onChange={handleFileChange}
+                                        multiple // Permite seleccionar múltiples archivos
+                                        style={{ display: 'none' }}
+                                    />
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <div className='flex flex-col mt-2 gap-5'>
+                    {fileNames.map((fileName, index) => (
+                        <div key={index} className='flex justify-between items-center mt-4'>
+                            <span>{fileName}</span>
+                            <Button
+                                variant="outlined"
+                                onClick={() => handleRemoveFile(fileName)}
+                            >
+                                Eliminar
+                            </Button>
+                        </div>
+                    ))}
+                </div>
+                <div className='flex flex-row gap-3 justify-end mt-5'>
+                    <Button
+                        onClick={async () => {
+                            try {
+                                const documento = await SubirDocumento(useDocsStores.files);
+                                if(documento.status === 201){
+                                    useDocsStores.clearFilesUser()
+                                }
+                            } catch (error) {
+                                    console.error('Error al subir archivos:', error);
+                            }
+                        }}
+                        variant="contained"
+                    >
+                        Enviar archivos
+                    </Button>
+                </div>
             </div>
-          ))}
-        </div>
-        <div className='flex flex-row gap-3 justify-end mt-5'>
-          <Button
-            onClick={async () => {
-              try {
-                const documento = await SubirDocumento(files);
-                console.log(documento, 'documento');
-              } catch (error) {
-                console.error('Error al subir archivos:', error);
-              }
-            }}
-            variant="contained"
-          >
-            Enviar archivos
-          </Button>
-        </div>
-      </div>
-    </main>
-  );
-};
+        </main>
+    );
+});
+
+export default ComponenteDocumento;
+
+

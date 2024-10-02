@@ -47,8 +47,7 @@ class UserData {
         'isAuthenticated': this.isAuthenticated,
         'message': 'the session is correct'
       }
-    } catch(error) {
-      console.log(error.response.data)
+    } catch(error:any) {
       this.isAuthenticated = false;
       return {
         'status': 400,

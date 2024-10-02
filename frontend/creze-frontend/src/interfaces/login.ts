@@ -41,3 +41,19 @@ export interface ComponenteError {
 export interface ResponseverifyToken {
     status: string;
 }
+
+
+export interface ErrorMensaje {
+    response: {
+        data: {
+            error: string;
+        }
+    }
+}
+
+export interface Documento{
+    file_name: string,
+    status: string,
+    url_document: string,
+    name_document: string,
+}

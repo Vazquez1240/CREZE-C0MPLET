@@ -1,14 +1,56 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { useLocation } from 'react-router-dom';
+import {Documento} from "../../interfaces/login.ts";
+import {HistorialDocumentos} from "../../api/api.ts";
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+
 
 export default function UpdateDocument() {
-    const location = useLocation();
-    console.log(location.pathname, 'name');
+    /*const location = useLocation();
+    console.log(location.pathname, 'name');*/
+    const [documentos, setDocumentos] = useState([]);
+
+    const response = HistorialDocumentos()
+
+    useEffect(() => {
+        const fetchDocumentos = async () => {
+            const response = await HistorialDocumentos();
+            console.log(response, 'deee');
+            setDocumentos(response);
+        };
+
+        fetchDocumentos();
+    }, []); // Ejecutar solo una vez al montar el componente
+
     return(
         <>
-            <h2>
-                3333
-            </h2>
+            {
+                documentos.length > 0 ?
+
+                    (
+                        documentos.map((documento:Documento, index) => {
+                            return (
+                                <div key={index}>
+                                    <ListItem key={index} component="div" disablePadding>
+                                        <ListItemButton>
+                                            <ListItemText primary={documento.name_document} />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </div>
+                            )
+                        })
+                    )
+                    :
+                    (
+                        <>
+                            <div>
+                                Toda via no tienes un archivo arriba, comienza subiendo uno
+                            </div>
+                        </>
+                    )
+            }
         </>
     )
 }

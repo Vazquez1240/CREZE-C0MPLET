@@ -1,6 +1,6 @@
 import axios from 'axios'
-import {LoginBody, RefreshToken, Register} from "../interfaces/login.ts";
-import UserData from "../stores/userData.ts";
+import {LoginBody, RefreshToken, Register, ErrorMensaje} from "../interfaces/login.ts";
+import useUserData from "../stores/userData.ts";
 
 const api = axios.create({
     baseURL: 'http://127.0.0.1:8000/',
@@ -18,7 +18,7 @@ export const refreshToken = async (refresh: RefreshToken) => {
             console.log('hay error')
         }
         return response.data;
-    }catch(error){
+    }catch(error:any){
         // @ts-ignore
         return {
             error: error.response.data.error
@@ -39,23 +39,39 @@ export const verifyToken = async (accessToken: string) => {
     return response.data;
 };
 
-export const SubirDocumento = async (documentos: File[]) => {
+export const SubirDocumento = async (documentos: FileList | File[]) => {
     const formData = new FormData();
 
-    documentos.forEach((documento) => {
+    const archivos = Array.isArray(documentos) ? documentos : Array.from(documentos);
+
+    archivos.forEach((documento) => {
         formData.append('file', documento);
     });
-
     try {
         const response = await api.post('/rest/v1/document-upload/', formData, {
             headers: {
-                'Authorization': `Bearer ${UserData.access_token}`,
+                'Authorization': `Bearer ${useUserData.access_token}`,
                 'Content-Type': 'multipart/form-data',
             },
         });
-        return response.data;
+        return response;
     } catch (error) {
         console.error('Error al subir documentos:', error);
-        throw error; // Maneja el error según sea necesario
+        throw error;
     }
 };
+
+
+export const HistorialDocumentos = async () => {
+    try{
+        const response = await api.get('/rest/v1/document-upload/',{
+            headers:{
+                'Authorization': `Bearer ${useUserData.access_token}`,
+            }
+        })
+        return response.data;
+    }catch(error){
+        console.error(error)
+        throw error;
+    }
+}
