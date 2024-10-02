@@ -134,44 +134,49 @@ class DocumentViewSet(viewsets.ModelViewSet):
         else:
             raise exceptions.PermissionDenied('Forbidden')
 
-
     def create(self, request, *args, **kwargs):
-        file = request.FILES.get('file')
-        if not file:
-            return Response({"error": "File is required"}, status=status.HTTP_400_BAD_REQUEST)
+        archivos = request.FILES.getlist('file')
+        if not archivos:
+            return Response({"error": "Files are required"}, status=status.HTTP_400_BAD_REQUEST)
 
         fragment_size = 1024 * 1024  # 1 MB
         s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                  aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 
-        file_name = file.name
+        responses = []
 
-        if Documento.objects.filter(file_name=file_name, user=request.user.id).exists():
-            return Response({'nombre': ['Ya existe un archivo con ese nombre!']},
-                            status=status.HTTP_400_BAD_REQUEST)
+        for file in archivos:
+            file_name = file.name
 
-        for i, chunk in enumerate(self.chunkify(file, fragment_size)):
-            print('entrando al for')
-            chunk_io = BytesIO(chunk)
-            fragment_name = f"{file_name}_part_{i}"
-            s3_client.upload_fileobj(chunk_io, settings.AWS_S3_BUCKET_NAME, fragment_name)
+            if Documento.objects.filter(file_name=file_name, user=request.user.id).exists():
+                return Response({'nombre': ['Ya existe un archivo con ese nombre!']},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-        file_name_encoded = urllib.parse.quote(fragment_name)
+            for i, chunk in enumerate(self.chunkify(file, fragment_size)):
+                print('entrando al for')
+                chunk_io = BytesIO(chunk)
+                fragment_name = f"{file_name}_part_{i}"
+                s3_client.upload_fileobj(chunk_io, settings.AWS_S3_BUCKET_NAME, fragment_name)
 
-        url_documento = f"https://{settings.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/{file_name_encoded}"
-        print(url_documento)
+            file_name_encoded = urllib.parse.quote(fragment_name)
 
-        serializer = self.get_serializer(data={
-            'file_name': file_name,
-            'original_size': file.size,
-            'status': 'Uploaded',
-            'url_document': url_documento,
-            'user': request.user.id,
-        })
+            url_documento = f"https://{settings.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/{file_name_encoded}"
 
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            serializer = self.get_serializer(data={
+                'file_name': file_name,
+                'original_size': file.size,
+                'status': 'Uploaded',
+                'url_document': url_documento,
+                'user': request.user.id,
+                'name_document': file.name
+            })
+
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            responses.append(serializer.data)
+
+        return Response(responses, status=status.HTTP_201_CREATED)
 
     def chunkify(self, file, size):
         while True:

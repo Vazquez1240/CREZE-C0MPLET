@@ -69,6 +69,7 @@ class Documento(models.Model):
     uploaded_at = models.DateTimeField(auto_now_add=True)
     url_document = models.URLField(blank=True)
     status = models.CharField(max_length=20, default='Pending')
+    name_document = models.CharField(max_length=255, default='')
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=('user', 'file_name'), name='unique_document')]

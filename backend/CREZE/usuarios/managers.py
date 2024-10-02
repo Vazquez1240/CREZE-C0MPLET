@@ -38,7 +38,6 @@ class CustomJWTAuthentication(JWTAuthentication):
             if 'refresh' in str(e):
                 raise AuthenticationFailed('Refresh token is invalid or expired. Please log in again.')
             else:
-                print('entro al else')
                 raise AuthenticationFailed('Access token is invalid. Please refresh your token.')
         except TokenError as e:
             raise AuthenticationFailed(f'Token error: {str(e)}')
