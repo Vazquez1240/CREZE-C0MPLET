@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'apirest',
-    'django_extensions'
+    'django_extensions',
+    'drf_spectacular'
 ]
 APPEND_SLASH = os.getenv('APPEND_SLASH', False)
 
@@ -195,4 +196,5 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.FormParser',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
