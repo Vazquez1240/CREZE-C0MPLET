@@ -33,9 +33,13 @@ const MainPage = observer(() => {
     }, [navigate]); // Agrega navigate como dependencia
 
     return (
-        isAuthenticated ? (
-            <Dashboard />
-        ) : null
+        <div>
+            {
+                isAuthenticated ? (
+                    <Dashboard />
+                ) : null
+            }
+        </div>
     );
 
 });

@@ -4,11 +4,9 @@ import { VisuallyHiddenInput } from '@chakra-ui/react';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { SubirDocumento } from "../../../api/api.ts";
 import useDocsStores from "../../../stores/UserDocs.ts";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import { observer } from 'mobx-react-lite'; // Asegúrate de estar usando 'mobx-react-lite'
-
-
-
-
 
 const ComponenteDocumento = observer(() => {
     const [files, setFiles] = useState(useDocsStores.files); // Estado para los archivos
@@ -49,15 +47,15 @@ const ComponenteDocumento = observer(() => {
 
 
     return (
-        <div className='flex flex-col gap-10 mt-10 min-h-full'>
-            <div>
+        <Card className='flex flex-col gap-10 mt-20' style={{background: '#E0E1DD'}}>
+            <CardContent>
                 En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
                 subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
                 de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
                 los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
-            </div>
+            </CardContent>
 
-            <div>
+            <CardContent>
                 <TextField
                     label="Seleccionar Archivos"
                     value={fileNames.join(', ')} // Muestra los nombres de los archivos seleccionados
@@ -109,8 +107,8 @@ const ComponenteDocumento = observer(() => {
                         Enviar archivos
                     </Button>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 });
 

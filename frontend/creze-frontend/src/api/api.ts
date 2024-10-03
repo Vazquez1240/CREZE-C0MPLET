@@ -41,7 +41,6 @@ export const verifyToken = async (accessToken: string) => {
 
 export const SubirDocumento = async (documentos: FileList | File[]) => {
     const formData = new FormData();
-
     const archivos = Array.isArray(documentos) ? documentos : Array.from(documentos);
 
     archivos.forEach((documento) => {
@@ -69,7 +68,7 @@ export const HistorialDocumentos = async () => {
                 'Authorization': `Bearer ${useUserData.access_token}`,
             }
         })
-        return response.data;
+        return response;
     }catch(error){
         console.error(error)
         throw error;
