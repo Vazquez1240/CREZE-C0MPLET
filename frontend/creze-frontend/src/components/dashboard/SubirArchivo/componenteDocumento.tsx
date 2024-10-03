@@ -47,8 +47,8 @@ const ComponenteDocumento = observer(() => {
 
 
     return (
-        <Card className='flex flex-col gap-10 mt-20' style={{background: '#E0E1DD'}}>
-            <CardContent>
+        <Card className='flex flex-col gap-10 mt-20 box-decoration-slice ' style={{background:'#f4f3ee'}}>
+            <CardContent className='text-zinc-900'>
                 En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
                 subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
                 de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
@@ -58,8 +58,8 @@ const ComponenteDocumento = observer(() => {
             <CardContent>
                 <TextField
                     label="Seleccionar Archivos"
+                    className='MuiButton-colorInherit'
                     value={fileNames.join(', ')} // Muestra los nombres de los archivos seleccionados
-                    variant="outlined"
                     fullWidth
                     InputProps={{
                         endAdornment: (
@@ -76,6 +76,9 @@ const ComponenteDocumento = observer(() => {
                             </InputAdornment>
                         ),
                     }}
+                    InputLabelProps={{
+                        style: { color: 'black' }
+                    }}
                 />
                 <div className='flex flex-col mt-2 gap-5'>
                     {fileNames.map((fileName, index) => (
@@ -83,6 +86,7 @@ const ComponenteDocumento = observer(() => {
                             <span>{fileName}</span>
                             <Button
                                 variant="outlined"
+                                color={'warning'}
                                 onClick={() => handleRemoveFile(fileName)}
                             >
                                 Eliminar
@@ -92,6 +96,7 @@ const ComponenteDocumento = observer(() => {
                 </div>
                 <div className='flex flex-row gap-3 justify-end mt-5'>
                     <Button
+                        style={{color: 'background'}}
                         onClick={async () => {
                             try {
                                 const documento = await SubirDocumento(useDocsStores.files);
@@ -103,6 +108,7 @@ const ComponenteDocumento = observer(() => {
                             }
                         }}
                         variant="contained"
+                        color={'info'}
                     >
                         Enviar archivos
                     </Button>
