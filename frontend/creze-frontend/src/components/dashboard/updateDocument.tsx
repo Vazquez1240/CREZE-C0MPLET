@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from "react";
-import { useLocation } from 'react-router-dom';
 import {Documento} from "../../interfaces/login.ts";
 import {HistorialDocumentos} from "../../api/api.ts";
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
+import NotFoundDocument from "../Error/NotFoundDocument.tsx";
 
 
 export default function UpdateDocument() {
@@ -25,7 +25,7 @@ export default function UpdateDocument() {
     }, []); // Ejecutar solo una vez al montar el componente
 
     return(
-        <>
+        <div style={{height: '100%'}}>
             {
                 documentos.length > 0 ?
 
@@ -45,12 +45,10 @@ export default function UpdateDocument() {
                     :
                     (
                         <>
-                            <div>
-                                Toda via no tienes un archivo arriba, comienza subiendo uno
-                            </div>
+                            <NotFoundDocument />
                         </>
                     )
             }
-        </>
+        </div>
     )
 }

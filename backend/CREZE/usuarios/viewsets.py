@@ -149,7 +149,10 @@ class DocumentViewSet(viewsets.ModelViewSet):
             file_name = file.name
 
             if Documento.objects.filter(file_name=file_name, user=request.user.id).exists():
-                return Response({'nombre': ['Ya existe un archivo con ese nombre!']},
+                return Response({
+                    'nombre': ['Ya existe un archivo con ese nombre!'],
+                    'archivo': [f'{file_name}']
+                },
                                 status=status.HTTP_400_BAD_REQUEST)
 
             for i, chunk in enumerate(self.chunkify(file, fragment_size)):

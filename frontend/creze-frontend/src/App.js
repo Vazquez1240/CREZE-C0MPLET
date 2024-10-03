@@ -17,8 +17,7 @@ function App() {
              <Route path='/' element={<Home />}/>
              <Route path='/inicio' element={<MainPage />}>
                  <Route index element={<ComponenteDocumento />} />
-                <Route path='mis-documentos' element={<UpdateDocument />} />
-                {/* Otras rutas internas pueden ir aquí */}
+                 <Route path='mis-documentos' element={<UpdateDocument />} />
             </Route>
              <Route path='/register' element={<RegisterPage />}/>
              <Route path='/error' element={<ErrorPage />}/>

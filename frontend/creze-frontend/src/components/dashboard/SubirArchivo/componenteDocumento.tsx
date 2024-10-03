@@ -49,13 +49,13 @@ const ComponenteDocumento = observer(() => {
 
 
     return (
-        <main className='flex flex-col gap-10 mt-10'>
-            <header>
+        <div className='flex flex-col gap-10 mt-10 min-h-full'>
+            <div>
                 En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
                 subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
                 de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
                 los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
-            </header>
+            </div>
 
             <div>
                 <TextField
@@ -110,7 +110,7 @@ const ComponenteDocumento = observer(() => {
                     </Button>
                 </div>
             </div>
-        </main>
+        </div>
     );
 });
 
