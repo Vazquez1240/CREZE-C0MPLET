@@ -14,6 +14,7 @@ import {Button} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {Delete} from "@mui/icons-material";
+import {Visibility} from "@mui/icons-material";
 
 export default function UpdateDocument() {
     const [documents, setDocumentos] = useState([]);

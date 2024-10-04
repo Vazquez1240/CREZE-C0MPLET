@@ -124,7 +124,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentSerializer
     permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
     parser_classes = [MultiPartParser, FormParser]
-    http_method_names = ['post', 'options', 'head', 'get']
+    http_method_names = ['post', 'options', 'head', 'get', 'delete']
 
     def get_queryset(self):
         if self.request.user.is_superuser or self.request.user.is_staff:
@@ -180,6 +180,27 @@ class DocumentViewSet(viewsets.ModelViewSet):
             responses.append(serializer.data)
 
         return Response(responses, status=status.HTTP_201_CREATED)
+
+    def destroy(self, request, *args, **kwargs):
+        documento = self.get_object()
+
+        print(documento.user, 'user')
+
+        if documento.user != request.user and not request.user.is_staff:
+            return Response({'error': 'No tienes permiso para eliminar este documento.'}, status=status.HTTP_403_FORBIDDEN)
+
+        s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                                 aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+        try:
+            s3_client.delete_object(Bucket=settings.AWS_S3_BUCKET_NAME, Key=documento.file_name)
+        except Exception as e:
+            return Response({'error': f'Error al eliminar el archivo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Eliminar el registro del documento
+        documento.delete()
+
+        return Response({'message': 'Documento eliminado exitosamente.'}, status=status.HTTP_204_NO_CONTENT)
+
 
     def chunkify(self, file, size):
         while True:
