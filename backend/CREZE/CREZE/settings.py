@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'apirest',
     'django_extensions',
-    'drf_spectacular'
+    'drf_spectacular',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 APPEND_SLASH = os.getenv('APPEND_SLASH', False)
 
