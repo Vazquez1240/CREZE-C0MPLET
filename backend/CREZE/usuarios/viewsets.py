@@ -8,7 +8,7 @@ from .permissions import IsAuthenticatedAndObjUserOrIsStaff
 from rest_framework import exceptions
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, TokenBackendError
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -184,8 +184,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         documento = self.get_object()
 
-        print(documento.user, 'user')
-
         if documento.user != request.user and not request.user.is_staff:
             return Response({'error': 'No tienes permiso para eliminar este documento.'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -208,3 +206,24 @@ class DocumentViewSet(viewsets.ModelViewSet):
             if not chunk:
                 break
             yield chunk
+
+
+class Logout(viewsets.ViewSet):
+    serializer_class = DocumentSerializer
+    permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
+    parser_classes = [MultiPartParser, FormParser]
+    http_method_names = ['post', 'options', 'head']
+
+    def create(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            token = CustomRefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({'token': 'Delete token'}, status=status.HTTP_205_RESET_CONTENT)
+
+        except TokenError as e:
+            return Response({'error':'El token ya se encuentra en la lista negra'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
