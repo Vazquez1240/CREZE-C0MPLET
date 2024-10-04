@@ -224,6 +224,6 @@ class Logout(viewsets.ViewSet):
 
         except TokenError as e:
             return Response({'error':'El token ya se encuentra en la lista negra'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

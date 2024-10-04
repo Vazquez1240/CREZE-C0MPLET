@@ -4,8 +4,9 @@ import React from "react";
 
 export default function NavbarWrapper() {
   const location = useLocation();
-  const showNavbar = location.pathname !== '/';
+  const excludedPaths = ['/', '/register'];
 
-  return showNavbar ? <Navbar /> : null;
+  const shouldShowNavbar = !excludedPaths.includes(location.pathname);
+
+  return shouldShowNavbar ? <Navbar /> : null;
 }
-
