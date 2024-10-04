@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFoundDocument() {
     return (
-        <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
+        <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8" style={{background:'#f4f3ee'}}>
             <div className="text-center">
                 <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-1xl">Upssss.. :(</h1>
                 <p className="mt-6 text-base leading-7 text-gray-600">

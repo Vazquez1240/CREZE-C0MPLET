@@ -14,7 +14,8 @@ import {Button} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {Delete} from "@mui/icons-material";
-import {Visibility} from "@mui/icons-material";
+import {EliminarDocumento} from "../../api/api.ts";
+
 
 export default function UpdateDocument() {
     const [documents, setDocumentos] = useState([]);
@@ -31,6 +32,15 @@ export default function UpdateDocument() {
         link.click();
         document.body.removeChild(link);
     };
+
+    const DeleteDocument = async (idDocument:number) => {
+        const response = await  EliminarDocumento(idDocument)
+        console.log(response, 'response')
+        // @ts-ignore
+        if(response.status === 204){
+            setDocumentos(documents.filter((document:Documento) => document.id !== idDocument))
+        }
+    }
 
     useEffect(() => {
         const fetchDocumentos = async () => {
@@ -68,29 +78,30 @@ export default function UpdateDocument() {
                 </div>
             ) : (
                 <div className='flex flex-col gap-3 w-[70%]'>
-                    <div className='flex flex-col justify-center '>
-                        <Typography textAlign={'justify'}>
-                            ¡Bienvenido a tu espacio personal! Aquí podrás encontrar todos los archivos que se
-                            han subido, organizados de manera clara y accesible para que puedas consultarlos en
-                            cualquier momento. Este espacio ha sido diseñado pensando en ti, para facilitar la
-                            visualización y el acceso a todos los documentos que necesitas. Ya no tendrás que
-                            preocuparte por perder información o por buscar entre múltiples plataformas, todo
-                            lo que se ha compartido estará reunido aquí.
-                        </Typography>
-                    </div>
                     {documents.length > 0 ? (
-                        <Card style={{background:'#f4f3ee'}}>
+                        <Card style={{background: '#f4f3ee'}}>
+                            <div className='flex flex-col justify-center '>
+                                <Typography textAlign={'justify'}>
+                                    ¡Bienvenido a tu espacio personal! Aquí podrás encontrar todos los archivos que se
+                                    han subido, organizados de manera clara y accesible para que puedas consultarlos en
+                                    cualquier momento. Este espacio ha sido diseñado pensando en ti, para facilitar la
+                                    visualización y el acceso a todos los documentos que necesitas. Ya no tendrás que
+                                    preocuparte por perder información o por buscar entre múltiples plataformas, todo
+                                    lo que se ha compartido estará reunido aquí.
+                                </Typography>
+                            </div>
                             <CardContent>
                                 {
                                     documents.map((documento: Documento, index) => (
-                                        <ListItem key={index} component="div"  style={{background:'#f4f3ee'}}>
+                                        <ListItem key={index} component="div" style={{background: '#f4f3ee'}}>
                                             <ListItemButton>
                                                 <ListItemText primary={documento.name_document}/>
                                                 <Button
                                                     endIcon={<Download color={'info'}/>}
                                                     onClick={() => handleDownload(documento.url_document, documento.name_document)}/>
                                                 <Button
-                                                endIcon={<Delete color={'warning'}/>}/>
+                                                    endIcon={<Delete color={'warning'}/>}
+                                                    onClick={() => DeleteDocument(documento.id)}/>
                                             </ListItemButton>
                                         </ListItem>
 

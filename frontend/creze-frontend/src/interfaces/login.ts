@@ -56,4 +56,5 @@ export interface Documento{
     status: string,
     url_document: string,
     name_document: string,
+    id: number;
 }

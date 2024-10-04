@@ -4,6 +4,7 @@
 
 Para poder correr el proyecto debemos utilizar el siguiente comando:
 
+access_token:""
 ### `npm start`
 
 Esto iniciara en modo dev\

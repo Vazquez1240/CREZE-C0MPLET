@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {LoginBody, RefreshToken, Register, ErrorMensaje} from "../interfaces/login.ts";
+import {LoginBody, RefreshToken, Register} from "../interfaces/login.ts";
 import useUserData from "../stores/userData.ts";
 
 const api = axios.create({
@@ -72,5 +72,19 @@ export const HistorialDocumentos = async () => {
     }catch(error){
         console.error(error)
         throw error;
+    }
+}
+
+
+
+export const EliminarDocumento = async (idDocumento:number) => {
+    try{
+        return await api.delete(`/rest/v1/document-upload/${idDocumento}/`, {
+            headers: {
+                'Authorization': `Bearer ${useUserData.access_token}`,
+            }
+        });
+    }catch(error:any){
+        console.error('Error al eliminar documentos:', error);
     }
 }
