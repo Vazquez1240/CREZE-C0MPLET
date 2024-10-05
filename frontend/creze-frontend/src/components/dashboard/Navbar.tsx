@@ -1,12 +1,15 @@
 import {Disclosure, DisclosureButton, DisclosurePanel, Menu,  MenuButton, MenuItem, MenuItems} from "@headlessui/react";
 import classNames from "classnames";
-import {Bars3Icon, BellIcon, XMarkIcon} from "@heroicons/react/24/outline";
+import {Bars3Icon, BellIcon, XMarkIcon, ArrowRightEndOnRectangleIcon} from "@heroicons/react/24/outline";
 import React from "react";
 import {useNavigate, useLocation} from "react-router-dom";
+import {Logout} from "../../api/api.ts";
+import useUserData from "../../stores/userData.ts";
 
 export default function Navbar() {
     const navigate = useNavigate()
     const location = useLocation()
+
 
     const user = {
       name: 'Tom Cook',
@@ -22,11 +25,25 @@ export default function Navbar() {
     ]
 
     const userNavigation = [
-      { name: 'Your Profile', href: '#' },
-      { name: 'Settings', href: '#' },      { name: 'Your Profile', href: '#' },
-      { name: 'Sign out', href: '#' },
-      { name: 'Pene', href: '#'}
+      {
+          name: 'Mi perfil',
+          href: '/inicio/mi-perfil',
+      },
+      {
+          name: 'Configuración',
+          href: '/inicio/configuracion',
+      },
     ]
+
+
+    const cerrarSesion = async () => {
+        const response = await Logout()
+        // @ts-ignore
+        if(response.status === 205){
+            useUserData.clearDataUser()
+            navigate('/')
+        }
+    }
     return (
         <>
              <Disclosure as="nav" className="bg-gray-800">
@@ -69,7 +86,7 @@ export default function Navbar() {
                                                 className="relative flex max-w-xs items-center rounded-full text-sm focus:outline-none text-gray-100  focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                                 <span className="absolute -inset-1.5"/>
                                                 <span className="sr-only">Open user menu</span>
-                                                <Bars3Icon className="h-6 w-6" />
+                                                <Bars3Icon className="h-6 w-6"/>
                                             </MenuButton>
                                         </div>
                                         <MenuItems
@@ -77,15 +94,23 @@ export default function Navbar() {
                                             className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                                         >
                                             {userNavigation.map((item) => (
-                                                <MenuItem key={item.name}>
+                                                <MenuItem key={item.href}>
                                                     <a
                                                         href={item.href}
                                                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
                                                     >
-                                                        {item.name} saas
+                                                        {item.name}
                                                     </a>
                                                 </MenuItem>
                                             ))}
+                                            <MenuItem>
+                                                <button
+                                                    onClick={cerrarSesion}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                >
+                                                    Cerrar sesión
+                                                </button>
+                                            </MenuItem>
                                         </MenuItems>
                                     </Menu>
                                 </div>

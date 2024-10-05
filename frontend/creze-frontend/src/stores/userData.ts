@@ -41,11 +41,14 @@ class UserData {
   async checkAuthentication() {
     try {
       const response: ResponseverifyToken = await verifyToken(this.access_token);
-      response.status === 'Token is valid' ? this.isAuthenticated = true : this.isAuthenticated = false;
-      return {
+      response.status === 401 ?  this.isAuthenticated = false : this.isAuthenticated = true;
+      return this.isAuthenticated ? {
         'status': 200,
         'isAuthenticated': this.isAuthenticated,
         'message': 'the session is correct'
+      }:{
+        'status': 400,
+        'message': response.data.detail
       }
     } catch(error:any) {
       this.isAuthenticated = false;
@@ -56,7 +59,7 @@ class UserData {
     }
   }
 
-  clearDataUser(): void {
+  clearDataUser(): boolean {
     this.access_token = '';
     this.refresh_token = '';
 
@@ -64,6 +67,8 @@ class UserData {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('email')
+
+    return true
   }
 }
 

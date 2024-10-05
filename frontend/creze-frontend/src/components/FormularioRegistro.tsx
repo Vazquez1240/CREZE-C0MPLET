@@ -6,6 +6,7 @@ import {Archive} from "@mui/icons-material";
 import {Register, RegisterResponse} from "../interfaces/login.ts";
 import {register} from "../api/api.ts";
 import SuccessRegister from "./SuccessRegister.tsx";
+import {Alert} from "@mui/material";
 
 export default function FormularioRegistro() {
     const [email, setEmail] = useState('');
@@ -41,10 +42,20 @@ export default function FormularioRegistro() {
         if (!password) {
             errors.password = 'La contraseña es obligatoria';
             isValid = false;
+        }else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+            errors.password = 'La contraseña ingresada no es valida (Debe de ser de almenos 8 caracteres de longitud una' +
+                'letra mayusculas y minusculas como un caracter especial ($, # @) )';
+            isValid = false;
         }
 
          if (!password2) {
             errors.password2 = 'Este campo es obligatoria';
+            isValid = false;
+        }
+
+        if(password !== password2){
+            errors.password = 'Las constraseñas deben coincidir';
+            errors.password2 = 'Las constraseñas deben coincidir';
             isValid = false;
         }
 
@@ -62,19 +73,21 @@ export default function FormularioRegistro() {
                 password: password,
                 password2: password2
             }
-            try {
-                const response:RegisterResponse = await register(registerData);
-                if(response.status === '201'){
-                    setTitulo('Felicidades :)')
-                    setMessage('Se ha creado correctamente tu usuario, ahora puedes iniciar sesion UwU')
-                    setOpenDialog(true)
-
-                }
-            } catch (error) {
-                console.error('Error en la solicitud:', error);
-            } finally {
-                setIsSubmitting(false);
+            const response:RegisterResponse = await register(registerData);
+            if(response.status === 201){
+                setTitulo('Felicidades :)')
+                setMessage('Se ha creado correctamente tu usuario, ahora puedes iniciar sesion UwU')
+                setOpenDialog(true)
+            }else{
+               if(response.data.email[0] === 'Usuario with this email already exists.'){
+                   errors.email = 'Esta dirección de correo ya esta registrada, intente con otro!';
+                   setErrors((prevErrors) => ({
+                       ...prevErrors,
+                       email: 'Esta dirección de correo ya está registrada, intente con otro!',
+                   }));
+               }
             }
+            setIsSubmitting(false);
         }
     };
 
@@ -177,7 +190,8 @@ export default function FormularioRegistro() {
                                 <div>
                                     <button
                                         type="submit"
-                                        className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        style={{background: '#415A77'}}
+                                        className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                     >
                                         Registrarte
                                     </button>

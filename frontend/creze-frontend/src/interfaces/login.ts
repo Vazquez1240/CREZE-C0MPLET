@@ -23,7 +23,8 @@ export interface LoginResponse {
 }
 
 export interface RegisterResponse {
-    status: string;
+    status: number;
+    data: any
 }
 
 export interface SucessResponse{
@@ -39,7 +40,8 @@ export interface ComponenteError {
 }
 
 export interface ResponseverifyToken {
-    status: string;
+    status: number;
+    data: any
 }
 
 

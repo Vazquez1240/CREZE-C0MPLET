@@ -35,7 +35,6 @@ export default function UpdateDocument() {
 
     const DeleteDocument = async (idDocument:number) => {
         const response = await  EliminarDocumento(idDocument)
-        console.log(response, 'response')
         // @ts-ignore
         if(response.status === 204){
             setDocumentos(documents.filter((document:Documento) => document.id !== idDocument))
@@ -80,7 +79,7 @@ export default function UpdateDocument() {
                 <div className='flex flex-col gap-3 w-[70%]'>
                     {documents.length > 0 ? (
                         <Card style={{background: '#f4f3ee'}}>
-                            <div className='flex flex-col justify-center '>
+                            <CardContent className='flex flex-col justify-center'>
                                 <Typography textAlign={'justify'}>
                                     ¡Bienvenido a tu espacio personal! Aquí podrás encontrar todos los archivos que se
                                     han subido, organizados de manera clara y accesible para que puedas consultarlos en
@@ -89,7 +88,7 @@ export default function UpdateDocument() {
                                     preocuparte por perder información o por buscar entre múltiples plataformas, todo
                                     lo que se ha compartido estará reunido aquí.
                                 </Typography>
-                            </div>
+                            </CardContent>
                             <CardContent>
                                 {
                                     documents.map((documento: Documento, index) => (

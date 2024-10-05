@@ -20,17 +20,17 @@ const MainPage = observer(() => {
             } else {
                 if(valid.message === 'Access token is invalid. Please refresh your token.'){
                     setIsAuthenticated(false);
-                    navigate('/error'); // Mueve la navegación aquí
+                    navigate('/error');
                 }else{
                     setIsAuthenticated(false)
                     useUserData.clearDataUser()
-                    navigate('/')
+                    navigate('/error')
                 }
             }
         };
 
         verifyToken();
-    }, [navigate]); // Agrega navigate como dependencia
+    }, [navigate]);
 
     return (
         <div>

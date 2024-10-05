@@ -23,6 +23,9 @@ const theme = createTheme({
         background: {
             default: '#f4f3ee', // Color de fondo por defecto
         },
+        success: {
+            main: '#91ff35'
+        }
 
     },
 });

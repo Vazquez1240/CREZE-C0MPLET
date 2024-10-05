@@ -11,7 +11,7 @@ export const login = async (loginData: LoginBody) => {
     return response.data;
 };
 
-export const refreshToken = async (refresh: RefreshToken) => {
+export const refreshToken = async (refresh: { refresh: string | null }) => {
     try{
         const response = await api.post('/rest/v1/refresh-token/', refresh);
         if(response.status === 400){
@@ -26,17 +26,43 @@ export const refreshToken = async (refresh: RefreshToken) => {
     }
 }
 
+
+export const Logout = async () => {
+    try{
+        const response = await api.post('/rest/v1/logout/', {refresh: useUserData.refresh_token}, {
+            headers: {
+                'Authorization': `Bearer ${useUserData.access_token}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        })
+
+        return response;
+    }catch(error:any){
+        return error.response
+    }
+}
+
 export const register = async (registerData: Register) => {
-    const response = await api.post('/rest/v1/register/', registerData);
-    return response.data;
+    try{
+        const response = await api.post('/rest/v1/register/', registerData);
+        return response;
+    }catch(error:any){
+        console.log(error, 'error')
+        return error.response
+    }
 }
 
 export const verifyToken = async (accessToken: string) => {
-    const response = await api.post('rest/v1/users/verify-token/verify/', {},  {
-            headers: { Authorization: `Bearer ${accessToken}` }
-        }
-    );
-    return response.data;
+    try{
+        const response = await api.post('rest/v1/users/verify-token/verify/', {},  {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            }
+        );
+        return response.data;
+    }catch (error:any){
+        console.log('entrando')
+        return error.response
+    }
 };
 
 export const SubirDocumento = async (documentos: FileList | File[]) => {
@@ -69,9 +95,9 @@ export const HistorialDocumentos = async () => {
             }
         })
         return response;
-    }catch(error){
+    }catch(error: any){
         console.error(error)
-        throw error;
+        return error.response
     }
 }
 
