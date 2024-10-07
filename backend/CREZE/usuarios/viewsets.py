@@ -41,6 +41,7 @@ class RegisterViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
     def create(self, request):
+        print(request.data['username'],' data')
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()

@@ -79,11 +79,17 @@ export default function FormularioRegistro() {
                 setMessage('Se ha creado correctamente tu usuario, ahora puedes iniciar sesion UwU')
                 setOpenDialog(true)
             }else{
-               if(response.data.email[0] === 'Usuario with this email already exists.'){
+               if (response.data?.email && Array.isArray(response.data.email) && response.data.email[0] === 'Usuario with this email already exists.') {
                    errors.email = 'Esta dirección de correo ya esta registrada, intente con otro!';
                    setErrors((prevErrors) => ({
                        ...prevErrors,
                        email: 'Esta dirección de correo ya está registrada, intente con otro!',
+                   }));
+               }
+               if(response.data?.username && Array.isArray(response.data.username) && response.data.username[0] === 'A user with that username already exists.'){
+                   setErrors((prevErrors) => ({
+                       ...prevErrors,
+                       user: 'Este usuario ya se encuentra en uso, intenta con uno nuevo!',
                    }));
                }
             }
@@ -118,7 +124,13 @@ export default function FormularioRegistro() {
                                             variant="standard"
                                             className='w-full'
                                             value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            onChange={(e) => {
+                                                setEmail(e.target.value)
+                                                setErrors((prevErrors) => ({
+                                                   ...prevErrors,
+                                                   email: '',
+                                               }));
+                                            }}
                                             error={!!errors.email}
                                             helperText={errors.email}
                                         />
@@ -138,7 +150,13 @@ export default function FormularioRegistro() {
                                             variant="standard"
                                             className='w-full'
                                             value={user}
-                                            onChange={(e) => setUser(e.target.value)}
+                                            onChange={(e) => {
+                                                setUser(e.target.value)
+                                                setErrors((prevErrors) => ({
+                                                   ...prevErrors,
+                                                   user: '',
+                                               }));
+                                            }}
                                             error={!!errors.user}
                                             helperText={errors.user}
                                         />
@@ -159,7 +177,13 @@ export default function FormularioRegistro() {
                                             variant="standard"
                                             className='w-full'
                                             value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value)
+                                                setErrors((prevErrors) => ({
+                                                   ...prevErrors,
+                                                   password: '',
+                                               }));
+                                            }}
                                             error={!!errors.password}
                                             helperText={errors.password}
                                         />
@@ -180,7 +204,13 @@ export default function FormularioRegistro() {
                                             variant="standard"
                                             className='w-full'
                                             value={password2}
-                                            onChange={(e) => setPassword2(e.target.value)}
+                                            onChange={(e) => {
+                                                setPassword2(e.target.value)
+                                                setErrors((prevErrors) => ({
+                                                   ...prevErrors,
+                                                   password2: '',
+                                               }));
+                                            }}
                                             error={!!errors.password2}
                                             helperText={errors.password2}
                                         />

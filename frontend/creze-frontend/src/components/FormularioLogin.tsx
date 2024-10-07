@@ -49,7 +49,6 @@ export default function FormularioLogin() {
             }
             try {
                 const response:LoginResponse = await login(loginData);
-
                 useUserData.setDataUser(response.access, response.refresh, email, password);
                 navigate('/inicio');
             } catch (error) {

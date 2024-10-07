@@ -12,10 +12,12 @@ class UserData {
   constructor() {
     const storedAccessToken = localStorage.getItem('access_token');
     const storedRefreshToken = localStorage.getItem('refresh_token');
+    const storeEmail = localStorage.getItem('email');
 
-    if (storedAccessToken && storedRefreshToken) {
+    if (storedAccessToken && storedRefreshToken && storeEmail) {
       this.access_token = storedAccessToken;
       this.refresh_token = storedRefreshToken;
+      this.email = storeEmail;
     }
 
     makeAutoObservable(this);

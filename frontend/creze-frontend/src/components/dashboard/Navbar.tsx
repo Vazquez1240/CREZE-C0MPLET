@@ -91,8 +91,15 @@ export default function Navbar() {
                                         </div>
                                         <MenuItems
                                             transition
-                                            className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
+                                            className="absolute  right-0 z-10 mt-2 w-auto origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                                         >
+                                            <MenuItem>
+                                                <div className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100">
+                                                        <div className="text-sm font-medium leading-none text-gray-400">
+                                                            {useUserData.email}
+                                                        </div>
+                                                </div>
+                                            </MenuItem>
                                             {userNavigation.map((item) => (
                                                 <MenuItem key={item.href}>
                                                     <a
@@ -128,8 +135,8 @@ export default function Navbar() {
                         </div>
                     </div>
 
-                    <DisclosurePanel className="md:hidden">
-                        <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
+                 <DisclosurePanel className="md:hidden">
+                     <div className="space-y-1 px-2 pb-3 pt-2 sm:px-3">
                             {navigation.map((item) => (
                                 <DisclosureButton
                                     key={item.name}

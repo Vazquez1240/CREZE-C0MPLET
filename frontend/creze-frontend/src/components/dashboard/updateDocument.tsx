@@ -15,13 +15,14 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {Delete} from "@mui/icons-material";
 import {EliminarDocumento} from "../../api/api.ts";
-
+import { Backdrop, CircularProgress } from '@mui/material';
 
 export default function UpdateDocument() {
     const [documents, setDocumentos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [fade, setFade] = useState(false);
     const [isLoadingComplete, setIsLoadingComplete] = useState(false);
+    const [showLoading, setShowLoading] = useState(false)
 
 
     const handleDownload = (url: string, name: string) => {
@@ -34,10 +35,12 @@ export default function UpdateDocument() {
     };
 
     const DeleteDocument = async (idDocument:number) => {
+        setShowLoading(true)
         const response = await  EliminarDocumento(idDocument)
         // @ts-ignore
         if(response.status === 204){
             setDocumentos(documents.filter((document:Documento) => document.id !== idDocument))
+            setShowLoading(false);
         }
     }
 
@@ -79,6 +82,12 @@ export default function UpdateDocument() {
                 <div className='flex flex-col gap-3 w-[70%]'>
                     {documents.length > 0 ? (
                         <Card style={{background: '#f4f3ee'}}>
+                            <Backdrop
+                            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                            open={showLoading}
+                          >
+                            <CircularProgress color="inherit" />
+                          </Backdrop>
                             <CardContent className='flex flex-col justify-center'>
                                 <Typography textAlign={'justify'}>
                                     ¡Bienvenido a tu espacio personal! Aquí podrás encontrar todos los archivos que se
