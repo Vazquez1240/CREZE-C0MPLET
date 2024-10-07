@@ -47,10 +47,10 @@ export default function UpdateDocument() {
     useEffect(() => {
         const fetchDocumentos = async () => {
             const response = await HistorialDocumentos();
-            if (response.status === 200 && response.data.length > 0) {
-                setDocumentos(response.data);
+            if (response.status === 200 && response.data.results.length > 0) {
+                setDocumentos(response.data.results);
             } else {
-                setDocumentos(response.data);
+                setDocumentos(response.data.results);
             }
             setTimeout(() => {
                 setLoading(false);
