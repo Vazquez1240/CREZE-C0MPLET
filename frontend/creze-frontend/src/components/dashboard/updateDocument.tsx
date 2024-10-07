@@ -81,15 +81,8 @@ export default function UpdateDocument() {
             ) : (
                 <div className='flex flex-col gap-3 w-[70%]'>
                     {documents.length > 0 ? (
-                        <Card style={{background: '#f4f3ee'}}>
-                            <Backdrop
-                            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-                            open={showLoading}
-                          >
-                            <CircularProgress color="inherit" />
-                          </Backdrop>
-                            <CardContent className='flex flex-col justify-center'>
-                                <Typography textAlign={'justify'}>
+                        <div className='flex flex-col gap-4'>
+                            <Typography textAlign={'justify'}>
                                     ¡Bienvenido a tu espacio personal! Aquí podrás encontrar todos los archivos que se
                                     han subido, organizados de manera clara y accesible para que puedas consultarlos en
                                     cualquier momento. Este espacio ha sido diseñado pensando en ti, para facilitar la
@@ -97,26 +90,37 @@ export default function UpdateDocument() {
                                     preocuparte por perder información o por buscar entre múltiples plataformas, todo
                                     lo que se ha compartido estará reunido aquí.
                                 </Typography>
-                            </CardContent>
-                            <CardContent>
+                            <div style={{background: '#f4f3ee'}}>
+                            <Backdrop
+                                sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                                open={showLoading}
+                            >
+                            <CircularProgress color="inherit" />
+                          </Backdrop>
+                            <div className='flex flex-row gap-5 '>
                                 {
                                     documents.map((documento: Documento, index) => (
-                                        <ListItem key={index} component="div" style={{background: '#f4f3ee'}}>
-                                            <ListItemButton>
-                                                <ListItemText primary={documento.name_document}/>
-                                                <Button
+                                        <Card className='w-52 h-26' key={index} style={{background: '#f4f3ee'}}>
+                                            <CardContent className='flex flex-col justify-around h-full '>
+                                                <div>
+                                                    <p style={{fontSize: '14px'}} className='font-sans'>{documento.name_document}</p>
+                                                </div>
+                                                <div>
+                                                    <Button
                                                     endIcon={<Download color={'info'}/>}
                                                     onClick={() => handleDownload(documento.url_document, documento.name_document)}/>
                                                 <Button
                                                     endIcon={<Delete color={'warning'}/>}
                                                     onClick={() => DeleteDocument(documento.id)}/>
-                                            </ListItemButton>
-                                        </ListItem>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
 
                                     ))
                                 }
-                            </CardContent>
-                        </Card>
+                            </div>
+                        </div>
+                        </div>
                     ) : (
                         <NotFoundDocument/>
                     )}
