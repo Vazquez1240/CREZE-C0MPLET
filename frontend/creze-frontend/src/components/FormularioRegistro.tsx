@@ -76,7 +76,7 @@ export default function FormularioRegistro() {
             const response:RegisterResponse = await register(registerData);
             if(response.status === 201){
                 setTitulo('Felicidades :)')
-                setMessage('Se ha creado correctamente tu usuario, ahora puedes iniciar sesion UwU')
+                setMessage('Tu cuenta ha sido creada exitosamente. Ahora puedes iniciar sesión con tus credenciales.')
                 setOpenDialog(true)
             }else{
                if (response.data?.email && Array.isArray(response.data.email) && response.data.email[0] === 'Usuario with this email already exists.') {

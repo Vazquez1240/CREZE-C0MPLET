@@ -18,14 +18,14 @@ const theme = createTheme({
             main: '#415A77'
         },
         warning: {
-          main: '#778DA9'
+          main: '#1B263B'
         },
         background: {
             default: '#f4f3ee', // Color de fondo por defecto
         },
         success: {
             main: '#91ff35'
-        }
+        },
 
     },
 });

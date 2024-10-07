@@ -87,9 +87,9 @@ export const SubirDocumento = async (documentos: FileList | File[]) => {
 };
 
 
-export const HistorialDocumentos = async () => {
+export const HistorialDocumentos = async (numberPagina:number) => {
     try{
-        const response = await api.get('/rest/v1/document-upload/',{
+        const response = await api.get(`/rest/v1/document-upload/?page=${numberPagina}`,{
             headers:{
                 'Authorization': `Bearer ${useUserData.access_token}`,
             }

@@ -59,4 +59,6 @@ export interface Documento{
     url_document: string,
     name_document: string,
     id: number;
+    uploaded_at: string,
+    original_size: string,
 }
