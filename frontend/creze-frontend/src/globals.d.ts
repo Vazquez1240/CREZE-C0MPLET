@@ -3,3 +3,7 @@ declare module '../../utils/Loading/bookloader.js' {
     export default BookLoader;
 }
 
+declare module '../../utils/Loading/sunspotloader.js' {
+    const SunspotLoader: any;
+    export default SunspotLoader;
+}

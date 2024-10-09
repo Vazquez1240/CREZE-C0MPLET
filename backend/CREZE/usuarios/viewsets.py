@@ -13,7 +13,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken, TokenBackendError
 from rest_framework.permissions import AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser
-import urllib.parse
+from urllib.parse import quote
 from rest_framework_simplejwt.tokens import UntypedToken
 from usuarios.managers import CustomRefreshToken
 from rest_framework.decorators import action
@@ -163,11 +163,11 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 
 
-        fragment_size = 1024 * 1024  # 1 MB
+        fragment_size = 20 * 1024 * 1024  # 20 MB en bytes
         s3_client = boto3.client('s3',
                                  aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                  aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-                                 region_name='us-east-2'
+                                 region_name=settings.AWS_S3_REGION
                                  )
         responses = []
 
@@ -180,20 +180,23 @@ class DocumentViewSet(viewsets.ModelViewSet):
                     'archivo': [f'{file_name}']
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            fragment_keys = []  # Para almacenar los nombres de los fragmentos
+            fragment_keys = []
 
             for i, chunk in enumerate(self.chunkify(file, fragment_size)):
-                print('entrando al for')
                 chunk_io = BytesIO(chunk)
                 fragment_name = f"{file_name}_part_{i}"
+                fragment_keys.append(fragment_name)
                 s3_client.upload_fileobj(chunk_io, settings.AWS_S3_BUCKET_NAME, fragment_name)
 
-            lambda_client = boto3.client('lambda', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                                          aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+            lambda_client = boto3.client('lambda',
+                                         aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                                         aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                                         region_name=settings.AWS_S3_REGION
+                                         )
             lambda_payload = {
                 'bucket': settings.AWS_S3_BUCKET_NAME,
                 'fragments': fragment_keys,
-                'final_file_name': file_name
+                'final_file_name': file_name,
             }
 
             lambda_response = lambda_client.invoke(
@@ -203,16 +206,18 @@ class DocumentViewSet(viewsets.ModelViewSet):
             )
             lambda_result = json.loads(lambda_response['Payload'].read())
 
-            if 'error' in lambda_result:
-                return Response({'error': lambda_result['error']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            if 'error' in lambda_result or 'errorType' in lambda_result:
+
+                return Response({'error': lambda_result['errorMessage']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             url_documento = lambda_result['url']
+            encoded_url_documento = quote(url_documento, safe=":/")
 
             serializer = self.get_serializer(data={
                 'file_name': file_name,
                 'original_size': file.size,
                 'status': 'Uploaded',
-                'url_document': url_documento,
+                'url_document': encoded_url_documento,
                 'user': request.user.id,
                 'name_document': file.name
             })
@@ -231,7 +236,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return Response({'error': 'No tienes permiso para eliminar este documento.'}, status=status.HTTP_403_FORBIDDEN)
 
 
-        s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        s3_client = boto3.client('s3',
+                                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                  aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
         try:
             s3_client.delete_object(Bucket=settings.AWS_S3_BUCKET_NAME, Key=documento.file_name)
@@ -248,4 +254,3 @@ class DocumentViewSet(viewsets.ModelViewSet):
             if not chunk:
                 break
             yield chunk
-

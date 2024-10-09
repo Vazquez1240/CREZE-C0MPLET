@@ -4,7 +4,7 @@ import { HistorialDocumentos } from "../../api/api.ts";
 import NotFoundDocument from "../Error/NotFoundDocument.tsx";
 import Typography from '@mui/material/Typography';
 // @ts-ignore
-import BookLoader from "../../utils/Loading/bookloader.js";
+import SunspotLoader from "../../utils/Loading/sunspotloader.js";
 import '../../assets/stylesheet/UpdateDocument.css';
 import {ArrowBack, ArrowForward, Download} from "@mui/icons-material";
 import {Button, DialogActions, PaginationItem} from "@mui/material";
@@ -55,7 +55,7 @@ export default function UpdateDocument() {
         if(response.status === 204){
             setDocumentos(documents.filter((document:Documento) => document.id !== idDocument))
             setShowLoading(false);
-            if(documents.length === 1){
+            if(documents.length === 1 && actualPagina !== 1){
                 setActualPagina(actualPagina - 1)
             }
         }
@@ -107,13 +107,10 @@ export default function UpdateDocument() {
                 <div className={`fade ${fade ? 'show' : ''} w-full flex justify-center py-24`}
                      style={{opacity: isLoadingComplete ? 0 : 1, transition: 'opacity 0.5s ease-in-out'}}>
 
-                    <BookLoader text='Cargando...'
-                                desktopSize='70px'
-                                background="rgba(0, 0, 0, .36)"
-                                shadowColor="rgba(0, 0, 0, 0.3)"
-                                textColor="#ffffff"
-                                pageColor="rgba(255, 255, 255, .36)"  // Color de página oscuro
-                                foldPageColor="rgba(0, 0, 0, .52)" />
+                    <SunspotLoader
+                        gradientColors={["#415A77", "#778DA9"]}
+                        desktopSize={"90px"}
+                        mobileSize={"100px"}/>
 
                 </div>
             ) : (
@@ -175,7 +172,7 @@ export default function UpdateDocument() {
                                                             {new Date(documento.uploaded_at).getUTCMonth() + 1} /
                                                             {new Date(documento.uploaded_at).getUTCFullYear()}
                                                         </Typography>
-                                                        <Typography variant='caption'><b>Tamaño:</b> {documento.original_size} Mb</Typography>
+                                                        <Typography variant='caption'><b>Tamaño:</b> {parseInt(documento.original_size) / 100} Mb</Typography>
                                                     </CardContent>
                                                     <CardActions className='flex flex-row gap-6'>
                                                         <Button

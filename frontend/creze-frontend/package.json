@@ -22,6 +22,7 @@
     "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.9.0",
+    "gsap": "^3.12.5",
     "heroicons": "^2.1.5",
     "lucide-react": "^0.447.0",
     "mobx": "^6.13.1",
