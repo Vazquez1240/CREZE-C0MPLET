@@ -31,9 +31,10 @@ export default function ErrorComponente({ componente }: Props) {
                                         // @ts-ignore
                                         boton.mensaje.toLowerCase() === 'ir al inicio' ? useUserData.clearDataUser() : boton.onClick()
                                     }}
-                                    className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold
-                                        text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                                    className="rounded-md px-3.5 py-2.5 text-sm font-semibold
+                                        text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
                                         focus-visible:outline-indigo-600"
+                                    style={{background: '#415A77'}}
                                 >
                                     {boton.mensaje}
                                 </Link>

@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import BookLoader from "../../utils/Loading/bookloader.js";
 import '../../assets/stylesheet/UpdateDocument.css';
 import {ArrowBack, ArrowForward, Download} from "@mui/icons-material";
-import {Button, PaginationItem} from "@mui/material";
+import {Button, DialogActions, PaginationItem} from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import {CardHeader} from "@mui/material";
@@ -17,6 +17,10 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import IconButton from "@mui/material/IconButton";
 import Pagination from "@mui/material/Pagination";
 import {CardActions} from "@mui/material";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import Dialog from "@mui/material/Dialog";
 
 export default function UpdateDocument() {
     const [documents, setDocumentos] = useState([]);
@@ -26,6 +30,8 @@ export default function UpdateDocument() {
     const [showLoading, setShowLoading] = useState(false)
     const [numberPagination, setNumberPagination] = useState<number>(1);
     const [actualPagina, setActualPagina] = useState<number>(1);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [idDocument, setIdDocument] = useState<number>(0);
 
 
     const handleDownload = (url: string, name: string) => {
@@ -37,7 +43,12 @@ export default function UpdateDocument() {
         document.body.removeChild(link);
     };
 
-    const DeleteDocument = async (idDocument:number) => {
+    const DeleteDocument = async () => {
+        setShowDeleteDialog(true)
+    }
+
+    const confirmDelete = async () => {
+        setShowDeleteDialog(false)
         setShowLoading(true)
         const response = await EliminarDocumento(idDocument)
         // @ts-ignore
@@ -52,18 +63,23 @@ export default function UpdateDocument() {
 
     useEffect(() => {
         const fetchDocumentos = async () => {
-            const response = await HistorialDocumentos(actualPagina);
-            if (response.status === 200 && response.data.results.length > 0) {
-                const paginas = paginationNumber(response.data.count)
-                setNumberPagination(paginas)
-                setDocumentos(response.data.results);
-            } else {
-                setDocumentos(response.data.results);
+            setLoading(true)
+            try{
+                const response = await HistorialDocumentos(actualPagina);
+                if (response.status === 200 && response.data.results.length > 0) {
+                    const paginas = paginationNumber(response.data.count)
+                    setNumberPagination(paginas)
+                    setDocumentos(response.data.results);
+                } else {
+                    setDocumentos(response.data.results);
+                }
+                setTimeout(() => {
+                    setLoading(false);
+                    setFade(true)
+                }, 500);
+            }catch(error) {
+                console.log(error)
             }
-            setTimeout(() => {
-                setLoading(false);
-                setFade(true)
-            }, 500);
         };
 
         fetchDocumentos();
@@ -91,7 +107,13 @@ export default function UpdateDocument() {
                 <div className={`fade ${fade ? 'show' : ''} w-full flex justify-center py-24`}
                      style={{opacity: isLoadingComplete ? 0 : 1, transition: 'opacity 0.5s ease-in-out'}}>
 
-                    <BookLoader text='Cargando...' desktopSize='70px' />
+                    <BookLoader text='Cargando...'
+                                desktopSize='70px'
+                                background="rgba(0, 0, 0, .36)"
+                                shadowColor="rgba(0, 0, 0, 0.3)"
+                                textColor="#ffffff"
+                                pageColor="rgba(255, 255, 255, .36)"  // Color de página oscuro
+                                foldPageColor="rgba(0, 0, 0, .52)" />
 
                 </div>
             ) : (
@@ -113,6 +135,31 @@ export default function UpdateDocument() {
                                     <CircularProgress color="inherit" />
                                 </Backdrop>
                                 <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+                                    <Dialog
+                                        open={showDeleteDialog}>
+                                        <DialogTitle>
+                                            ¿Estás seguro de que quieres eliminar este archivo?
+                                        </DialogTitle>
+                                        <DialogContent>
+                                            <DialogContentText color={'dimgray'}>
+                                                Esta acción no se puede deshacer. El archivo será eliminado permanentemente.
+                                            </DialogContentText>
+                                        </DialogContent>
+                                        <DialogActions>
+
+                                            <Button
+                                                onClick={() => setShowDeleteDialog(false)}
+                                                color='info'>
+                                                Cancelar
+                                            </Button>
+
+                                            <Button autoFocus color="error"
+                                                onClick={() => confirmDelete()}>
+                                                Eliminar
+                                            </Button>
+
+                                        </DialogActions>
+                                    </Dialog>
                                     {
                                         documents.map((documento: Documento, index) => (
                                             <Card key={index} style={{background: '#f4f3ee'}}>
@@ -128,7 +175,7 @@ export default function UpdateDocument() {
                                                             {new Date(documento.uploaded_at).getUTCMonth() + 1} /
                                                             {new Date(documento.uploaded_at).getUTCFullYear()}
                                                         </Typography>
-                                                        <Typography variant='caption'><b>Tamaño:</b> {documento.original_size}</Typography>
+                                                        <Typography variant='caption'><b>Tamaño:</b> {documento.original_size} Mb</Typography>
                                                     </CardContent>
                                                     <CardActions className='flex flex-row gap-6'>
                                                         <Button
@@ -141,7 +188,10 @@ export default function UpdateDocument() {
                                                         <IconButton
                                                             aria-label="delete"
                                                             color={'warning'}
-                                                            onClick={() => DeleteDocument(documento.id)}>
+                                                            onClick={() => {
+                                                                setIdDocument(documento.id)
+                                                                DeleteDocument()
+                                                            }}>
                                                             <Delete />
                                                         </IconButton>
                                                     </CardActions>
@@ -155,6 +205,7 @@ export default function UpdateDocument() {
                                 <div className='flex justify-center w-full'>
                                     <Pagination
                                     count={numberPagination}
+                                    page={actualPagina}
                                     onChange={handlePageChange}
                                     shape="rounded"
                                     renderItem={(item) => (

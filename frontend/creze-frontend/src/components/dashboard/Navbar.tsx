@@ -29,10 +29,6 @@ export default function Navbar() {
           name: 'Mi perfil',
           href: '/inicio/mi-perfil',
       },
-      {
-          name: 'Configuración',
-          href: '/inicio/configuracion',
-      },
     ]
 
 

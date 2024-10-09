@@ -23,6 +23,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'default')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', 'default')
 AWS_S3_BUCKET_NAME = os.getenv('AWS_S3_BUCKET_NAME', 'creze')
+AWS_S3_LAMBDA_NAME = os.getenv('AWS_S3_LAMBDA_NAME', 'creze')
+AWS_S3_REGION = os.getenv('AWS_S3_REGION', 'us-east-1')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/

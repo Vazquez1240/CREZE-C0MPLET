@@ -1,4 +1,5 @@
 import boto3
+import json
 from io import BytesIO
 from CREZE import settings
 from .models import User, Documento
@@ -35,6 +36,26 @@ class UserViewSet(viewsets.ModelViewSet):
             return User.objects.filter(pk=self.request.user.pk)
         else:
             raise exceptions.PermissionDenied('Forbidden')
+
+class Logout(viewsets.ViewSet):
+    serializer_class = DocumentSerializer
+    permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
+    parser_classes = [MultiPartParser, FormParser]
+    http_method_names = ['post', 'options', 'head']
+
+    def create(self, request):
+        try:
+            refresh_token = request.data.get('refresh')
+            token = CustomRefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({'token': 'Delete token'}, status=status.HTTP_205_RESET_CONTENT)
+
+        except TokenError as e:
+            return Response({'error':'El token ya se encuentra en la lista negra'}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterViewSet(viewsets.ViewSet):
     http_method_names = ['post', 'options', 'head']
@@ -140,10 +161,14 @@ class DocumentViewSet(viewsets.ModelViewSet):
         if not archivos:
             return Response({"error": "Files are required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        fragment_size = 1024 * 1024  # 1 MB
-        s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-                                 aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
 
+
+        fragment_size = 1024 * 1024  # 1 MB
+        s3_client = boto3.client('s3',
+                                 aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                                 aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+                                 region_name='us-east-2'
+                                 )
         responses = []
 
         for file in archivos:
@@ -153,8 +178,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 return Response({
                     'nombre': ['Ya existe un archivo con ese nombre!'],
                     'archivo': [f'{file_name}']
-                },
-                                status=status.HTTP_400_BAD_REQUEST)
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            fragment_keys = []  # Para almacenar los nombres de los fragmentos
 
             for i, chunk in enumerate(self.chunkify(file, fragment_size)):
                 print('entrando al for')
@@ -162,9 +188,25 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 fragment_name = f"{file_name}_part_{i}"
                 s3_client.upload_fileobj(chunk_io, settings.AWS_S3_BUCKET_NAME, fragment_name)
 
-            file_name_encoded = urllib.parse.quote(fragment_name)
+            lambda_client = boto3.client('lambda', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+                                          aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
+            lambda_payload = {
+                'bucket': settings.AWS_S3_BUCKET_NAME,
+                'fragments': fragment_keys,
+                'final_file_name': file_name
+            }
 
-            url_documento = f"https://{settings.AWS_S3_BUCKET_NAME}.s3.amazonaws.com/{file_name_encoded}"
+            lambda_response = lambda_client.invoke(
+                FunctionName=f'{settings.AWS_S3_LAMBDA_NAME}',
+                InvocationType='RequestResponse',
+                Payload=json.dumps(lambda_payload)
+            )
+            lambda_result = json.loads(lambda_response['Payload'].read())
+
+            if 'error' in lambda_result:
+                return Response({'error': lambda_result['error']}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            url_documento = lambda_result['url']
 
             serializer = self.get_serializer(data={
                 'file_name': file_name,
@@ -188,6 +230,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         if documento.user != request.user and not request.user.is_staff:
             return Response({'error': 'No tienes permiso para eliminar este documento.'}, status=status.HTTP_403_FORBIDDEN)
 
+
         s3_client = boto3.client('s3', aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
                                  aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY)
         try:
@@ -195,11 +238,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({'error': f'Error al eliminar el archivo: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Eliminar el registro del documento
         documento.delete()
 
         return Response({'message': 'Documento eliminado exitosamente.'}, status=status.HTTP_204_NO_CONTENT)
-
 
     def chunkify(self, file, size):
         while True:
@@ -208,23 +249,3 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 break
             yield chunk
 
-
-class Logout(viewsets.ViewSet):
-    serializer_class = DocumentSerializer
-    permission_classes = [IsAuthenticatedAndObjUserOrIsStaff]
-    parser_classes = [MultiPartParser, FormParser]
-    http_method_names = ['post', 'options', 'head']
-
-    def create(self, request):
-        try:
-            refresh_token = request.data.get('refresh')
-            token = CustomRefreshToken(refresh_token)
-            token.blacklist()
-
-            return Response({'token': 'Delete token'}, status=status.HTTP_205_RESET_CONTENT)
-
-        except TokenError as e:
-            return Response({'error':'El token ya se encuentra en la lista negra'}, status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
