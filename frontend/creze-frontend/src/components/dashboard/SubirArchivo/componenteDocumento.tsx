@@ -11,6 +11,7 @@ import { observer } from 'mobx-react-lite'; // Asegúrate de estar usando 'mobx-
 const ComponenteDocumento = observer(() => {
     const [files, setFiles] = useState(useDocsStores.files); // Estado para los archivos
     const [fileNames, setFileNames] = useState(useDocsStores.filesName); // Estado para los nombres de los archivos
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     // Actualizar los estados cuando los archivos o nombres cambien en el store
     useEffect(() => {
@@ -98,10 +99,12 @@ const ComponenteDocumento = observer(() => {
                     <Button
                         style={{color: 'background'}}
                         onClick={async () => {
+                            setIsSubmitting(true)
                             try {
-                                const documento = await SubirDocumento(useDocsStores.files);
+                                const documento = await SubirDocumento(files);
                                 if(documento.status === 201){
                                     useDocsStores.clearFilesUser()
+                                    setIsSubmitting(false)
                                 }
                             } catch (error) {
                                     console.error('Error al subir archivos:', error);
@@ -110,7 +113,7 @@ const ComponenteDocumento = observer(() => {
                         variant="contained"
                         color={'info'}
                     >
-                        Enviar archivos
+                        {isSubmitting ? 'Enviando...' : 'Enviar archivo'}
                     </Button>
                 </div>
             </CardContent>

@@ -3,7 +3,7 @@ import {LoginBody, RefreshToken, Register} from "../interfaces/login.ts";
 import useUserData from "../stores/userData.ts";
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:8000/',
+    baseURL: process.env.REACT_APP_URL_BACKEND_DRF,
 });
 
 export const login = async (loginData: LoginBody) => {
@@ -65,11 +65,13 @@ export const verifyToken = async (accessToken: string) => {
     }
 };
 
-export const SubirDocumento = async (documentos: FileList | File[]) => {
+export const SubirDocumento = async (documentos: File) => {
     const formData = new FormData();
+    // @ts-ignore
     const archivos = Array.isArray(documentos) ? documentos : Array.from(documentos);
 
     archivos.forEach((documento) => {
+        // @ts-ignore
         formData.append('file', documento);
     });
     try {

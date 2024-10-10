@@ -58,6 +58,7 @@ export default function UpdateDocument() {
             if(documents.length === 1 && actualPagina !== 1){
                 setActualPagina(actualPagina - 1)
             }
+
         }
     }
 
