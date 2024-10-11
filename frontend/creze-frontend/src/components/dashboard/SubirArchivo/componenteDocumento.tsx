@@ -49,10 +49,10 @@ const ComponenteDocumento = observer(() => {
 
     return (
         <Card className='flex flex-col gap-10 mt-20 box-decoration-slice ' style={{background:'#f4f3ee'}}>
-            <CardContent className='text-zinc-900'>
+            <CardContent className='text-zinc-900 text-justify'>
                 En esta sección, tendrás la posibilidad de cargar tus documentos. Dispondrás de un espacio designado para
                 subir los archivos que consideres necesarios. Es importante destacar que tus documentos serán transmitidos
-                de manera segura a la nube. Además, podrás visualizarlos en la sección "Mis Documentos", donde encontrarás
+                de manera segura a la nube. Además, podrás visualizarlos en la sección <b>"Mis Documentos"</b>, donde encontrarás
                 los archivos que has subido y tendrás la opción de eliminarlos o descargarlos según tu conveniencia.
             </CardContent>
 
