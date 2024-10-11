@@ -1,6 +1,6 @@
 ## Introducción
 
-Este backend fue realizado para una prueba tecncia y cuenta con conexión a AWS, esto con la finalidad
+Este backend fue realizado para una prueba tecnica y cuenta con conexión a AWS, esto con la finalidad
 de que los archivos que se suban (PDF, docxs, iso, etc) se guarden en un bucket dentro del mismo aws.
 Este backend esta realizado con Django rest framework.
 
